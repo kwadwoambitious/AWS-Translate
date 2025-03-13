@@ -13,7 +13,7 @@ export class AwsTranslateService {
 
   constructor() {
     this.client = new TranslateClient({
-      region: 'us-east-1',
+      region: environment.region,
       credentials: {
         accessKeyId: environment.accessKeyId,
         secretAccessKey: environment.secretAccessKey,
@@ -26,12 +26,23 @@ export class AwsTranslateService {
     sourceLang: string,
     targetLang: string
   ): Promise<string> {
-    const command = new TranslateTextCommand({
-      Text: text,
-      SourceLanguageCode: sourceLang,
-      TargetLanguageCode: targetLang,
-    });
-    const response = await this.client.send(command);
-    return response.TranslatedText ?? '';
+    if (!text?.trim()) {
+      throw new Error('Text to translate cannot be empty');
+    }
+    if (!sourceLang || !targetLang) {
+      throw new Error('Source and target languages must be specified');
+    }
+    try {
+      const command = new TranslateTextCommand({
+        Text: text,
+        SourceLanguageCode: sourceLang,
+        TargetLanguageCode: targetLang,
+      });
+      const response = await this.client.send(command);
+      return response.TranslatedText ?? '';
+    } catch (error) {
+      console.error('Translation failed:', error);
+      throw error;
+    }
   }
 }

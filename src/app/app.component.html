@@ -1,5 +1,9 @@
 <div>
-  <h1>{{ 'GREETING' | translate }}</h1>
-  <button (click)="performTranslation()">Translate 'Hello' to Spanish</button>
-  <p *ngIf="translatedText">Translated Text: {{ translatedText }}</p>
+  <h1>AWS TRANSLATE APP</h1>
+  <button (click)="performTranslation()">Click to translate</button>
+  @if(isLoading) {
+  <p>Loading...</p>
+  } @else {
+  <p>{{welcomeText}}</p>
+  }
 </div>

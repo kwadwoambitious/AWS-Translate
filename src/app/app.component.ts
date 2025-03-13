@@ -1,30 +1,33 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AwsTranslateService } from './aws-translate.service';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+// import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TranslatePipe, CommonModule],
+  imports: [CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  translatedText: string = '';
-
-  constructor(
-    private readonly awsTranslateService: AwsTranslateService,
-    private readonly translate: TranslateService
-  ) {}
+  public welcomeText: string = 'Welcome!';
+  public isLoading: boolean = false;
+  private readonly awsTranslateService = inject(AwsTranslateService);
 
   async performTranslation() {
-    // Example: Translate the default language text to Spanish
-    const textToTranslate = 'Hello, welcome!';
-    this.translatedText = await this.awsTranslateService.translateText(
-      textToTranslate,
-      'en',
-      'zh-tw'
-    );
+    this.isLoading = true;
+    try {
+      this.welcomeText = await this.awsTranslateService.translateText(
+        this.welcomeText,
+        'en',
+        'fr'
+      );
+    } catch (error) {
+      console.error('Translation failed:', error);
+      throw error;
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
